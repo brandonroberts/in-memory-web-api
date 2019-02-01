@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "es2015",
+    "module": "es2015",
+    "target": "es2015",
+    "declaration": false
+  },
+  "files": [
+    "src/in-mem/index.ts"
+  ]
+}

@@ -21,15 +21,19 @@ gulp.task('help', $.taskListing.withFilters(function (taskName) {
   return shouldRemove;
 }));
 
-gulp.task('build', ['umd'], function(){
+gulp.task('build', ['compile:es2015', 'umd'], function(){
   return gulp
     .src(jsCopySrc)
     .pipe(gulp.dest('./'));
 });
 
 gulp.task('ngc', ['clean'], function(done) {
-  runNgc('src/in-mem/', done);
+  runCompilation('src/in-mem/', './node_modules/@angular/compiler-cli/src/main.js', './tsconfig-ngc.json', done);
 });
+
+gulp.task('compile:es2015', function(done) {
+    runCompilation('src/in-mem/', './node_modules/.bin/tsc', './tsconfig.es2015.json', done);
+  });
 
 // Uses rollup-stream plugin https://www.npmjs.com/package/rollup-stream
 gulp.task('umd', ['ngc'], function(done) {
@@ -42,6 +46,7 @@ gulp.task('clean', function() {
   return Promise.all([
     clean([
       'aot/**/*.*',
+      'es2015/*.*',
       'src/**/*.d.ts',
       'src/**/*.js.map',
       'src/**/*.metadata.json',
@@ -64,7 +69,7 @@ gulp.task('clean', function() {
       './in-memory-web-api.module.*',
       './index.*',
       './bundles/in-memory-web-api.umd.js'
-    ])
+    ])    
   ])
   .then(() => console.log('Cleaned successfully'));
 });
@@ -118,12 +123,11 @@ function log(msg) {
         $.util.log($.util.colors.blue(msg));
     }
 }
-function runNgc(directory, done) {
+function runCompilation(directory, compilerPath, tsconfig, done) {
     directory = directory || './';
     //var ngcjs = path.join(process.cwd(), 'node_modules/typescript/bin/tsc');
     //ngcjs = path.join(process.cwd(), 'node_modules/.bin/ngc');
-    var ngcjs = './node_modules/@angular/compiler-cli/src/main.js';
-    var childProcess = cp.spawn('node', [ngcjs, '-p', './tsconfig-ngc.json'], { cwd: process.cwd() });
+    var childProcess = cp.spawn('node', [compilerPath, '-p', tsconfig], { cwd: process.cwd() });
     childProcess.stdout.on('data', function (data) {
         console.log(data.toString());
     });
