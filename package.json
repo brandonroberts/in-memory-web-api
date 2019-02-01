@@ -5,6 +5,7 @@
   "main": "bundles/in-memory-web-api.umd.js",
   "module": "index.js",
   "es2015": "es2015/index.js",
+  "esm5": "index.js",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc -w",
